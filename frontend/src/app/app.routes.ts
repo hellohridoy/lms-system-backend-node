@@ -8,6 +8,8 @@ import { CatalogComponent } from './features/catalog/catalog';
 import { RequestManagementComponent } from './features/management/requests';
 import { UsersComponent } from './features/management/users';
 import { HistoryComponent } from './features/profile/history';
+import { SettingsComponent } from './features/management/settings';
+import { ReportsComponent } from './features/management/reports';
 import { AdminLayoutComponent } from './shared/components/admin-layout';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -25,6 +27,8 @@ export const routes: Routes = [
             { path: 'catalog', component: CatalogComponent },
             { path: 'management/requests', component: RequestManagementComponent },
             { path: 'management/users', component: UsersComponent, canActivate: [authGuard], data: { roles: ['ROLE_ADMIN'] } },
+            { path: 'management/settings', component: SettingsComponent, canActivate: [authGuard], data: { roles: ['ROLE_ADMIN'] } },
+            { path: 'management/reports', component: ReportsComponent, canActivate: [authGuard], data: { roles: ['ROLE_ADMIN', 'ROLE_LIBRARIAN'] } },
             { path: 'history', component: HistoryComponent },
             { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
         ]

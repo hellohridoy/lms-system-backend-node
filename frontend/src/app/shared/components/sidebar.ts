@@ -14,6 +14,7 @@ export class SidebarComponent implements OnInit {
     genres: string[] = [];
     isBackendExpanded: boolean = false;
     isFrontendExpanded: boolean = false;
+    isManagementMode: boolean = true; // For Librarian dual view
 
     backendMenus = [
         { name: 'Spring Boot', icon: '🍃' },
@@ -52,5 +53,14 @@ export class SidebarComponent implements OnInit {
     onLogout() {
         this.authService.logout();
         this.router.navigate(['/auth/login']);
+    }
+
+    toggleManagementMode() {
+        this.isManagementMode = !this.isManagementMode;
+        if (this.isManagementMode) {
+            this.router.navigate(['/management/requests']);
+        } else {
+            this.router.navigate(['/dashboard']);
+        }
     }
 }

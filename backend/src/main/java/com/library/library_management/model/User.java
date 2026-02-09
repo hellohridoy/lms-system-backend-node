@@ -26,6 +26,7 @@ public class User {
     private String fullName;
     private String phoneNumber;
     private String address;
+    private Integer borrowingLimit;
 
     @Builder.Default
     @Column(name = "account_non_locked", nullable = false)

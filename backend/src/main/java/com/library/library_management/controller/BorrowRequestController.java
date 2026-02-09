@@ -29,6 +29,9 @@ public class BorrowRequestController {
     @Autowired
     BookRepository bookRepository;
 
+    @Autowired
+    com.library.library_management.repository.SystemConfigRepository systemConfigRepository;
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('LIBRARIAN')")
     public List<BorrowRequest> getAllRequests(@RequestParam(required = false) BorrowRequest.BorrowStatus status) {
@@ -51,6 +54,11 @@ public class BorrowRequestController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByUsername(userDetails.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRole() == User.Role.ROLE_GUEST) {
+            return ResponseEntity.status(403).body("Guests cannot request books");
+        }
+
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
@@ -61,23 +69,45 @@ public class BorrowRequestController {
         List<BorrowRequest> activeRequests = borrowRequestRepository.findByUserId(user.getId()).stream()
                 .filter(r -> r.getStatus() == BorrowRequest.BorrowStatus.APPROVED
                         || r.getStatus() == BorrowRequest.BorrowStatus.PENDING_LIBRARIAN
-                        || r.getStatus() == BorrowRequest.BorrowStatus.PENDING_ADMIN)
+                        || r.getStatus() == BorrowRequest.BorrowStatus.PENDING_ADMIN
+                        || r.getStatus() == BorrowRequest.BorrowStatus.OVERDUE)
                 .toList();
 
-        if (activeRequests.size() >= 5) {
-            return ResponseEntity.badRequest().body("You have reached your borrowing limit of 5 books.");
+        int limit = user.getBorrowingLimit() != null ? user.getBorrowingLimit() : 3;
+        if (activeRequests.size() >= limit) {
+            return ResponseEntity.badRequest().body("You have reached your borrowing limit of " + limit + " books.");
+        }
+
+        BorrowRequest.BorrowStatus initialStatus = BorrowRequest.BorrowStatus.PENDING_LIBRARIAN;
+        if (user.getRole() == User.Role.ROLE_LIBRARIAN) {
+            initialStatus = BorrowRequest.BorrowStatus.PENDING_ADMIN;
+        } else if (user.getRole() == User.Role.ROLE_ADMIN) {
+            initialStatus = BorrowRequest.BorrowStatus.APPROVED;
+        }
+
+        com.library.library_management.model.SystemConfig config = systemConfigRepository.findCurrentConfig()
+                .orElse(null);
+        if (config != null && config.isAutoApproveMembers() && user.getRole() == User.Role.ROLE_MEMBER) {
+            initialStatus = BorrowRequest.BorrowStatus.APPROVED;
         }
 
         BorrowRequest request = BorrowRequest.builder()
                 .user(user)
                 .book(book)
                 .requestDate(LocalDateTime.now())
-                .status(BorrowRequest.BorrowStatus.PENDING_LIBRARIAN)
+                .status(initialStatus)
                 .isRenewal(false)
                 .build();
 
+        if (initialStatus == BorrowRequest.BorrowStatus.APPROVED) {
+            request.setApprovalDate(LocalDateTime.now());
+            request.setDueDate(LocalDateTime.now().plusDays(14));
+            book.setAvailableCopies(book.getAvailableCopies() - 1);
+            bookRepository.save(book);
+        }
+
         borrowRequestRepository.save(request);
-        return ResponseEntity.ok("Request submitted successfully");
+        return ResponseEntity.ok("Request submitted successfully. Status: " + initialStatus);
     }
 
     @PostMapping("/renew/{id}")
@@ -142,12 +172,18 @@ public class BorrowRequestController {
         List<BorrowRequest> history = borrowRequestRepository.findByUserId(user.getId());
 
         // Dynamic fine calculation
+        com.library.library_management.model.SystemConfig config = systemConfigRepository.findCurrentConfig()
+                .orElse(null);
+        double fineRate = config != null ? config.getFineRate() : 1.0;
+        int gracePeriod = config != null ? config.getGracePeriod() : 0;
+
         LocalDateTime now = LocalDateTime.now();
         for (BorrowRequest request : history) {
             if (request.getStatus() == BorrowRequest.BorrowStatus.APPROVED && request.getDueDate() != null) {
-                if (now.isAfter(request.getDueDate())) {
-                    long lateDays = java.time.Duration.between(request.getDueDate(), now).toDays();
-                    request.setFineAmount((double) lateDays * 1.0); // $1 per day
+                if (now.isAfter(request.getDueDate().plusDays(gracePeriod))) {
+                    long lateDays = java.time.Duration.between(request.getDueDate().plusDays(gracePeriod), now)
+                            .toDays();
+                    request.setFineAmount((double) lateDays * fineRate);
                     if (lateDays > 0) {
                         request.setStatus(BorrowRequest.BorrowStatus.OVERDUE);
                         borrowRequestRepository.save(request);

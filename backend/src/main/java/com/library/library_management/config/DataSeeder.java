@@ -23,6 +23,9 @@ public class DataSeeder implements CommandLineRunner {
         @Autowired
         PasswordEncoder encoder;
 
+        @Autowired
+        com.library.library_management.repository.SystemConfigRepository systemConfigRepository;
+
         @Override
         public void run(String... args) throws Exception {
                 if (userRepository.count() == 0) {
@@ -31,6 +34,23 @@ public class DataSeeder implements CommandLineRunner {
                 if (bookRepository.count() == 0) {
                         seedBooks();
                 }
+                if (systemConfigRepository.count() == 0) {
+                        seedConfig();
+                }
+        }
+
+        private void seedConfig() {
+                com.library.library_management.model.SystemConfig config = com.library.library_management.model.SystemConfig
+                                .builder()
+                                .fineRate(1.0)
+                                .gracePeriod(0)
+                                .autoApproveMembers(false)
+                                .librarianRequestApprovalRequired(true)
+                                .defaultMemberBorrowingLimit(3)
+                                .defaultLibrarianBorrowingLimit(10)
+                                .build();
+                systemConfigRepository.save(config);
+                System.out.println("System configuration seeded successfully.");
         }
 
         private void seedUsers() {
@@ -40,6 +60,7 @@ public class DataSeeder implements CommandLineRunner {
                                 .password(encoder.encode("admin"))
                                 .role(User.Role.ROLE_ADMIN)
                                 .status(User.UserStatus.ACTIVE)
+                                .borrowingLimit(Integer.MAX_VALUE)
                                 .build();
 
                 User librarian = User.builder()
@@ -48,6 +69,7 @@ public class DataSeeder implements CommandLineRunner {
                                 .password(encoder.encode("password"))
                                 .role(User.Role.ROLE_LIBRARIAN)
                                 .status(User.UserStatus.ACTIVE)
+                                .borrowingLimit(10)
                                 .build();
 
                 User member = User.builder()
@@ -56,6 +78,7 @@ public class DataSeeder implements CommandLineRunner {
                                 .password(encoder.encode("password"))
                                 .role(User.Role.ROLE_MEMBER)
                                 .status(User.UserStatus.ACTIVE)
+                                .borrowingLimit(3)
                                 .build();
 
                 userRepository.saveAll(Arrays.asList(admin, librarian, member));
