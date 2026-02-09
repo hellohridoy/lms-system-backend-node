@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BorrowService } from '../../core/services/borrow.service';
 import { AuthService } from '../../core/services/auth.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-request-management',
@@ -11,6 +12,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class RequestManagementComponent implements OnInit {
     requests: any[] = [];
     userRole: string = '';
+    selectedIds: Set<number> = new Set();
 
     constructor(private borrowService: BorrowService, private authService: AuthService) { }
 
@@ -31,10 +33,59 @@ export class RequestManagementComponent implements OnInit {
     }
 
     onReview(id: number, approve: boolean) {
-        if (this.userRole === 'ROLE_LIBRARIAN') {
-            this.borrowService.reviewRequest(id, approve).subscribe(() => this.loadRequests());
-        } else if (this.userRole === 'ROLE_ADMIN') {
-            this.borrowService.approveRequest(id, approve).subscribe(() => this.loadRequests());
+        const action = approve ? this.borrowService.reviewRequest(id, true) : this.borrowService.reviewRequest(id, false);
+        const adminAction = approve ? this.borrowService.approveRequest(id, true) : this.borrowService.approveRequest(id, false);
+
+        const obs = (this.userRole === 'ROLE_LIBRARIAN') ? action : adminAction;
+
+        obs.subscribe({
+            next: () => {
+                this.loadRequests();
+                this.selectedIds.delete(id);
+            },
+            error: (err) => console.error('Review failed', err)
+        });
+    }
+
+    toggleSelection(id: number) {
+        if (this.selectedIds.has(id)) {
+            this.selectedIds.delete(id);
+        } else {
+            this.selectedIds.add(id);
+        }
+    }
+
+    onBulkReview(approve: boolean) {
+        if (this.selectedIds.size === 0) return;
+
+        const ids = Array.from(this.selectedIds);
+        const requests = ids.map(id => {
+            if (this.userRole === 'ROLE_LIBRARIAN') {
+                return this.borrowService.reviewRequest(id, approve);
+            } else {
+                return this.borrowService.approveRequest(id, approve);
+            }
+        });
+
+        forkJoin(requests).subscribe({
+            next: () => {
+                alert(`Successfully ${approve ? 'approved' : 'rejected'} ${ids.length} requests`);
+                this.selectedIds.clear();
+                this.loadRequests();
+            },
+            error: (err) => alert('One or more requests failed: ' + err.message)
+        });
+    }
+
+    isAllSelected(): boolean {
+        return this.requests.length > 0 && this.requests.every(r => this.selectedIds.has(r.id));
+    }
+
+    toggleAll() {
+        if (this.isAllSelected()) {
+            this.selectedIds.clear();
+        } else {
+            this.requests.forEach(r => this.selectedIds.add(r.id));
         }
     }
 

@@ -27,6 +27,9 @@ public class BorrowRequest {
     private LocalDateTime approvalDate;
     private LocalDateTime dueDate;
     private LocalDateTime returnDate;
+    private Double fineAmount;
+    private boolean isRenewal;
+    private boolean finePaid;
 
     @Enumerated(EnumType.STRING)
     private BorrowStatus status;

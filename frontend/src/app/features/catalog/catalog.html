@@ -1,5 +1,5 @@
 <div class="space-y-8">
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
                 {{ selectedGenre ? selectedGenre + ' Collection' : 'Book Catalog' }}
@@ -7,6 +7,17 @@
             <p class="text-gray-500 mt-1">
                 {{ selectedGenre ? 'Showing books in ' + selectedGenre : 'Browse our collection and request books.' }}
             </p>
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+            <div class="relative flex-1 md:w-64">
+                <input type="text" (input)="onSearch($event)" placeholder="Search books..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-app-primary/20 focus:border-app-primary transition-all outline-none text-sm">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
         </div>
     </div>
 

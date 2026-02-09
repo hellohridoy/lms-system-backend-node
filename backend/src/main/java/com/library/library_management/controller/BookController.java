@@ -54,6 +54,8 @@ public class BookController {
             book.setCoverUrl(bookDetails.getCoverUrl());
             book.setTotalCopies(bookDetails.getTotalCopies());
             book.setAvailableCopies(bookDetails.getAvailableCopies());
+            book.setPublicationYear(bookDetails.getPublicationYear());
+            book.setTags(bookDetails.getTags());
             return ResponseEntity.ok(bookRepository.save(book));
         }).orElse(ResponseEntity.notFound().build());
     }

@@ -17,6 +17,9 @@ public class AuthDto {
         private String email;
         private String password;
         private String role;
+        private String fullName;
+        private String phoneNumber;
+        private String address;
     }
 
     @Data
@@ -26,13 +29,20 @@ public class AuthDto {
         private String username;
         private String email;
         private String role;
+        private String fullName;
+        private String phoneNumber;
+        private String address;
 
-        public JwtResponse(String token, Long id, String username, String email, String role) {
+        public JwtResponse(String token, Long id, String username, String email, String role, String fullName,
+                String phoneNumber, String address) {
             this.token = token;
             this.id = id;
             this.username = username;
             this.email = email;
             this.role = role;
+            this.fullName = fullName;
+            this.phoneNumber = phoneNumber;
+            this.address = address;
         }
     }
 

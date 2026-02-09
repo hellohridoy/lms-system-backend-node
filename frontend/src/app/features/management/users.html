@@ -1,0 +1,57 @@
+<div class="space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Member Management</h1>
+            <p class="text-gray-500 mt-1">Manage library members and their access status.</p>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 border-b border-gray-100">
+                <tr>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">User</th>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Email</th>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Role</th>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Joined Date</th>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Status</th>
+                    <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                <tr *ngFor="let user of users" class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 bg-app-light rounded-xl flex items-center justify-center text-app-primary font-bold">
+                                {{ user.username.charAt(0).toUpperCase() }}
+                            </div>
+                            <span class="font-bold text-gray-900">{{ user.username }}</span>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6 text-gray-600">{{ user.email }}</td>
+                    <td class="px-8 py-6">
+                        <span [class]="getRoleBadgeClass(user.roles)">
+                            {{ user.roles[0]?.name.replace('ROLE_', '') }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-sm text-gray-500">{{ user.createdAt || 'N/A' | date:'mediumDate' }}</td>
+                    <td class="px-8 py-6">
+                        <span [class]="user.enabled ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                            class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            {{ user.enabled ? 'Active' : 'Inactive' }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-right">
+                        <button (click)="toggleStatus(user.id, user.enabled)"
+                            [class]="user.enabled ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'"
+                            class="px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                            {{ user.enabled ? 'Deactivate' : 'Activate' }}
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

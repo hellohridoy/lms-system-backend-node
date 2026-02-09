@@ -23,6 +23,9 @@ public class User {
     private String username;
     private String email;
     private String password;
+    private String fullName;
+    private String phoneNumber;
+    private String address;
 
     @Builder.Default
     @Column(name = "account_non_locked", nullable = false)

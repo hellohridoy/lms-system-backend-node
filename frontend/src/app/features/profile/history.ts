@@ -24,6 +24,20 @@ export class HistoryComponent implements OnInit {
         });
     }
 
+    renewBook(id: number) {
+        this.borrowService.renewBook(id).subscribe({
+            next: () => {
+                alert('Renewal request submitted successfully!');
+                this.loadHistory();
+            },
+            error: (err) => alert('Error requesting renewal: ' + err.error)
+        });
+    }
+
+    payFine(id: number) {
+        alert('Redirecting to payment gateway... (Mock)');
+    }
+
     getStatusClass(status: string): string {
         const baseClass = 'px-3 py-1 rounded-full text-xs font-semibold ';
         switch (status) {
@@ -39,5 +53,13 @@ export class HistoryComponent implements OnInit {
 
     formatStatus(status: string): string {
         return status.replace(/_/g, ' ');
+    }
+
+    getRemainingDays(dueDate: string | undefined): number | null {
+        if (!dueDate) return null;
+        const due = new Date(dueDate);
+        const now = new Date();
+        const diff = due.getTime() - now.getTime();
+        return Math.ceil(diff / (1000 * 60 * 60 * 24));
     }
 }

@@ -4,12 +4,26 @@
             <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Borrow Requests</h1>
             <p class="text-gray-500 mt-1">Review and approve member borrowing requests.</p>
         </div>
+        <div class="flex gap-2" *ngIf="selectedIds.size > 0">
+            <button (click)="onBulkReview(true)"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-green-500/20 hover:bg-green-700 transition-all">
+                Approve Selected ({{ selectedIds.size }})
+            </button>
+            <button (click)="onBulkReview(false)"
+                class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold shadow-lg shadow-red-500/20 hover:bg-red-700 transition-all">
+                Reject Selected ({{ selectedIds.size }})
+            </button>
+        </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         <table class="w-full text-left border-collapse">
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr>
+                    <th class="px-8 py-5 w-10">
+                        <input type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()"
+                            class="rounded border-gray-300 text-app-primary focus:ring-app-primary">
+                    </th>
                     <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Member</th>
                     <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Book Title</th>
                     <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Request Date</th>
@@ -19,7 +33,13 @@
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
-                <tr *ngFor="let request of requests" class="hover:bg-gray-50/50 transition-colors">
+                <tr *ngFor="let request of requests" class="hover:bg-gray-50/50 transition-colors"
+                    [class.bg-app-light/30]="selectedIds.has(request.id)">
+                    <td class="px-8 py-6">
+                        <input type="checkbox" [checked]="selectedIds.has(request.id)"
+                            (change)="toggleSelection(request.id)"
+                            class="rounded border-gray-300 text-app-primary focus:ring-app-primary">
+                    </td>
                     <td class="px-8 py-6">
                         <div class="flex items-center gap-3">
                             <div

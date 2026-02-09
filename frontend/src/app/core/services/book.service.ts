@@ -12,6 +12,8 @@ export interface Book {
     coverUrl: string;
     totalCopies: number;
     availableCopies: number;
+    publicationYear?: number;
+    tags?: string[];
 }
 
 @Injectable({
@@ -22,10 +24,11 @@ export class BookService {
 
     constructor(private http: HttpClient) { }
 
-    getBooks(search?: string, genre?: string): Observable<Book[]> {
+    getBooks(search?: string, genre?: string, year?: number): Observable<Book[]> {
         let params: any = {};
         if (search) params.search = search;
         if (genre) params.genre = genre;
+        if (year) params.year = year;
         return this.http.get<Book[]>(this.apiUrl, { params });
     }
 

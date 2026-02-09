@@ -34,4 +34,12 @@ export class BorrowService {
     getMyHistory(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/my-history`);
     }
+
+    renewBook(id: number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/renew/${id}`, {});
+    }
+
+    getDashboardStats(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/stats`);
+    }
 }

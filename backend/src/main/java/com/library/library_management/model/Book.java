@@ -25,4 +25,12 @@ public class Book {
     private String coverUrl;
     private Integer totalCopies;
     private Integer availableCopies;
+
+    private Integer publicationYear;
+
+    @Builder.Default
+    @ElementCollection
+    @CollectionTable(name = "book_tags", joinColumns = @JoinColumn(name = "book_id"))
+    @Column(name = "tag")
+    private java.util.Set<String> tags = new java.util.HashSet<>();
 }
