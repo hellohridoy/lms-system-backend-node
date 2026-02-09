@@ -1,0 +1,52 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../core/services/auth.service';
+import { AddBookComponent } from '../management/add-book';
+import { DataUpdateService } from '../../core/services/data-update.service';
+
+@Component({
+    selector: 'app-dashboard',
+    standalone: true,
+    imports: [CommonModule, AddBookComponent],
+    templateUrl: './dashboard.html'
+})
+export class DashboardComponent implements OnInit {
+    showAddBookModal = false;
+    stats: any = {
+        totalBooks: 0,
+        activeMembers: 0,
+        pendingRequests: 0,
+        overdueFines: 0,
+        recentActivities: [],
+        popularBooks: []
+    };
+
+    constructor(
+        private http: HttpClient,
+        public authService: AuthService,
+        private dataUpdateService: DataUpdateService
+    ) { }
+
+    ngOnInit() {
+        this.loadStats();
+        this.dataUpdateService.dataUpdated$.subscribe(() => {
+            this.loadStats();
+        });
+    }
+
+    loadStats() {
+        this.http.get('http://localhost:8080/api/dashboard/stats').subscribe({
+            next: (data) => this.stats = data,
+            error: (err) => console.error('Failed to load dashboard stats', err)
+        });
+    }
+
+    openAddBookModal() {
+        this.showAddBookModal = true;
+    }
+
+    get isAdmin() {
+        return this.authService.isAdmin();
+    }
+}

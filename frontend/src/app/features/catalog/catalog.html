@@ -1,0 +1,44 @@
+<div class="space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">
+                {{ selectedGenre ? selectedGenre + ' Collection' : 'Book Catalog' }}
+            </h1>
+            <p class="text-gray-500 mt-1">
+                {{ selectedGenre ? 'Showing books in ' + selectedGenre : 'Browse our collection and request books.' }}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div *ngFor="let book of books"
+            class="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="h-64 bg-gray-100 relative">
+                <img [src]="book.coverUrl || 'https://images.unsplash.com/photo-1543005128-d3098380e227?auto=format&fit=crop&q=80&w=300'"
+                    class="w-full h-full object-cover">
+                <div
+                    class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-app-primary">
+                    {{ book.genre }}
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 line-clamp-1">{{ book.title }}</h3>
+                    <p class="text-sm text-gray-500 font-medium">{{ book.author }}</p>
+                </div>
+                <p class="text-gray-600 text-sm line-clamp-2">{{ book.synopsis }}</p>
+                <div class="flex items-center justify-between pt-2">
+                    <div class="text-xs font-bold uppercase tracking-wider">
+                        <span [class]="book.availableCopies > 0 ? 'text-green-600' : 'text-red-600'">
+                            {{ book.availableCopies > 0 ? book.availableCopies + ' Copies Available' : 'Out of Stock' }}
+                        </span>
+                    </div>
+                    <button (click)="requestBook(book.id!)" [disabled]="book.availableCopies === 0"
+                        class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:bg-app-secondary disabled:opacity-50 disabled:shadow-none transition-all active:scale-[0.98]">
+                        Borrow Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

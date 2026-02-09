@@ -1,0 +1,62 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">My Borrow History</h1>
+            <p class="text-purple-200">Track all your borrowing activities</p>
+        </div>
+
+        <!-- History Table -->
+        <div class="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-white/5">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Book Title</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Author</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Request Date</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Status</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Due Date</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-purple-200">Return Date</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/10">
+                        @if (history.length === 0) {
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-purple-200">
+                                <div class="flex flex-col items-center gap-3">
+                                    <svg class="w-16 h-16 text-purple-300" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                                        </path>
+                                    </svg>
+                                    <p class="text-lg">No borrowing history yet</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                        @for (item of history; track item.id) {
+                        <tr class="hover:bg-white/5 transition-colors">
+                            <td class="px-6 py-4 text-white font-medium">{{ item.book.title }}</td>
+                            <td class="px-6 py-4 text-purple-200">{{ item.book.author }}</td>
+                            <td class="px-6 py-4 text-purple-200">{{ item.requestDate | date: 'MMM d, y' }}</td>
+                            <td class="px-6 py-4">
+                                <span [class]="getStatusClass(item.status)">
+                                    {{ formatStatus(item.status) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-purple-200">
+                                {{ item.dueDate ? (item.dueDate | date: 'MMM d, y') : '-' }}
+                            </td>
+                            <td class="px-6 py-4 text-purple-200">
+                                {{ item.returnDate ? (item.returnDate | date: 'MMM d, y') : '-' }}
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

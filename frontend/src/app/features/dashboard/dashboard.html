@@ -1,0 +1,138 @@
+<div class="space-y-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Dashboard Overview</h1>
+            <p class="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
+        </div>
+        <div class="flex gap-3" *ngIf="isAdmin">
+            <button
+                class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">Export
+                Report</button>
+            <button (click)="openAddBookModal()"
+                class="px-4 py-2 bg-app-primary rounded-lg text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 hover:bg-app-secondary transition-all">Add
+                New Book</button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Total Books</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ stats.totalBooks | number }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Active Members</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ stats.activeMembers | number }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Requests Pending</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ stats.pendingRequests | number }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500 uppercase tracking-wider">Overdue Fines</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mt-1">{{ stats.overdueFines | currency }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Recent Activity</h3>
+            <div class="space-y-6">
+                <div *ngFor="let activity of stats.recentActivities"
+                    class="flex items-center justify-between pb-6 border-b border-gray-50 last:border-0">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 font-bold uppercase">
+                            {{ activity.user.substring(0, 2) }}</div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ activity.user }} {{ activity.action }}</p>
+                            <p class="text-xs text-gray-500">{{ activity.timeAgo }}</p>
+                        </div>
+                    </div>
+                    <span [class]="'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ' + 
+                        (activity.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 
+                         activity.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 
+                         'bg-yellow-100 text-yellow-700')">
+                        {{ activity.status }}
+                    </span>
+                </div>
+                <div *ngIf="stats.recentActivities.length === 0" class="text-center py-8 text-gray-500">
+                    No recent activity found.
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-6">Popular Books</h3>
+            <div class="space-y-6">
+                <div *ngFor="let book of stats.popularBooks" class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <img [src]="book.coverUrl || 'https://images.unsplash.com/photo-1543005128-d3098380e227?auto=format&fit=crop&q=80&w=100'"
+                            class="w-12 h-16 object-cover rounded-lg shadow-sm">
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">{{ book.title }}</p>
+                            <p class="text-xs text-gray-500">{{ book.author }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-indigo-600">{{ book.borrowCount }}</p>
+                        <p class="text-[10px] text-gray-400 uppercase font-bold">Borrows</p>
+                    </div>
+                </div>
+                <div *ngIf="stats.popularBooks.length === 0" class="text-center py-8 text-gray-500">
+                    No popular books data available.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-add-book *ngIf="showAddBookModal" (close)="showAddBookModal = false"></app-add-book>
