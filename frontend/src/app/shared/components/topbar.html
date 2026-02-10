@@ -1,17 +1,62 @@
-<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm">
+<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm relative z-50">
     <div class="flex items-center gap-4">
         <h2 class="text-sm font-medium text-gray-500 uppercase tracking-widest">Library Management System</h2>
     </div>
 
     <div class="flex items-center gap-6">
-        <button class="relative p-2 text-gray-400 hover:text-app-primary transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
-                </path>
-            </svg>
-            <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-        </button>
+        <!-- Notification Bell -->
+        <div class="relative">
+            <button (click)="toggleNotifications()"
+                class="relative p-2 text-gray-400 hover:text-app-primary transition-colors focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
+                    </path>
+                </svg>
+                <span *ngIf="notifications.length > 0"
+                    class="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[10px] text-white flex items-center justify-center font-bold">
+                    {{ notifications.length }}
+                </span>
+            </button>
+
+            <!-- Notification Dropdown -->
+            <div *ngIf="showNotifications"
+                class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-pop-in">
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+                    <h3 class="font-bold text-gray-900 text-sm">Notifications</h3>
+                    <button (click)="clearAll()" class="text-xs text-app-primary hover:underline font-semibold">Clear
+                        all</button>
+                </div>
+                <div class="max-h-96 overflow-y-auto">
+                    <div *ngFor="let n of notifications"
+                        class="p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer">
+                        <div class="flex gap-3">
+                            <div [class]="'w-2 h-2 rounded-full mt-1.5 shrink-0 ' + 
+                                (n.type === 'success' ? 'bg-green-500' : 
+                                 n.type === 'error' ? 'bg-red-500' : 
+                                 n.type === 'warning' ? 'bg-orange-500' : 'bg-blue-500')">
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-800 leading-tight">{{ n.message }}</p>
+                                <p class="text-[10px] text-gray-400 mt-1 font-medium">{{ n.timestamp | date:'shortTime'
+                                    }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="notifications.length === 0" class="p-8 text-center bg-white">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
+                                </path>
+                            </svg>
+                        </div>
+                        <p class="text-sm text-gray-500 font-medium tracking-tight">All caught up!</p>
+                        <p class="text-xs text-gray-400 mt-1">No new notifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="flex items-center gap-3 border-l pl-6 border-gray-100">
             <div class="text-right">

@@ -5,7 +5,7 @@
             <p class="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
         </div>
         <div class="flex gap-3" *ngIf="isAdmin">
-            <button
+            <button (click)="exportReport()"
                 class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">Export
                 Report</button>
             <button (click)="openAddBookModal()"

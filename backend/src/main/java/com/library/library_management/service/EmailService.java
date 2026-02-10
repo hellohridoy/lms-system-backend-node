@@ -15,14 +15,16 @@ public class EmailService {
         System.out.println("Reset URL: http://localhost:34181/auth/reset-password?token=" + resetToken);
         System.out.println("This token will expire in 1 hour.");
         System.out.println("==============================================\n");
+    }
 
-        // TODO: For production, implement actual email sending using JavaMailSender
-        // Example with Gmail SMTP:
-        // SimpleMailMessage message = new SimpleMailMessage();
-        // message.setTo(toEmail);
-        // message.setSubject("Password Reset Request");
-        // message.setText("Click the link to reset your password:
-        // http://localhost:34181/auth/reset-password?token=" + resetToken);
-        // mailSender.send(message);
+    public void sendReturnReminder(String toEmail, String bookTitle, java.time.LocalDateTime dueDate) {
+        System.out.println("\n==============================================");
+        System.out.println("RETURN REMINDER EMAIL");
+        System.out.println("==============================================");
+        System.out.println("To: " + toEmail);
+        System.out.println("Book: " + bookTitle);
+        System.out.println("Due Date: " + dueDate);
+        System.out.println("Message: Your book is due in 2 days. Please return it to avoid fines!");
+        System.out.println("==============================================\n");
     }
 }

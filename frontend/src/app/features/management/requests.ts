@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BorrowService } from '../../core/services/borrow.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ModalService } from '../../core/services/modal.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -14,7 +15,11 @@ export class RequestManagementComponent implements OnInit {
     userRole: string = '';
     selectedIds: Set<number> = new Set();
 
-    constructor(private borrowService: BorrowService, private authService: AuthService) { }
+    constructor(
+        private borrowService: BorrowService,
+        private authService: AuthService,
+        private modalService: ModalService
+    ) { }
 
     ngOnInit() {
         const user = this.authService.getUser();
@@ -40,6 +45,8 @@ export class RequestManagementComponent implements OnInit {
 
         obs.subscribe({
             next: () => {
+                const msg = approve ? 'Request approved successfully!' : 'Request rejected successfully!';
+                this.modalService.show(msg, approve ? 'success' : 'info');
                 this.loadRequests();
                 this.selectedIds.delete(id);
             },
@@ -69,7 +76,8 @@ export class RequestManagementComponent implements OnInit {
 
         forkJoin(requests).subscribe({
             next: () => {
-                alert(`Successfully ${approve ? 'approved' : 'rejected'} ${ids.length} requests`);
+                const msg = `Successfully ${approve ? 'approved' : 'rejected'} ${ids.length} requests`;
+                this.modalService.show(msg, approve ? 'success' : 'info');
                 this.selectedIds.clear();
                 this.loadRequests();
             },

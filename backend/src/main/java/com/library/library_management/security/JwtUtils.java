@@ -43,8 +43,17 @@ public class JwtUtils {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);
             return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            // Log error
+        } catch (MalformedJwtException e) {
+            System.err.println("Invalid JWT token: " + e.getMessage());
+        } catch (ExpiredJwtException e) {
+            System.err.println("JWT token is expired: " + e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            System.err.println("JWT token is unsupported: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("JWT claims string is empty: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("JWT validation error: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }

@@ -5,9 +5,12 @@ import { BookService, Book } from '../../core/services/book.service';
 import { BorrowService } from '../../core/services/borrow.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DataUpdateService } from '../../core/services/data-update.service';
+import { ModalService } from '../../core/services/modal.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
     selector: 'app-catalog',
+    standalone: true,
     imports: [CommonModule],
     templateUrl: './catalog.html'
 })
@@ -24,7 +27,9 @@ export class CatalogComponent implements OnInit {
         private borrowService: BorrowService,
         private authService: AuthService,
         private route: ActivatedRoute,
-        private dataUpdateService: DataUpdateService
+        private dataUpdateService: DataUpdateService,
+        private modalService: ModalService,
+        private notificationService: NotificationService
     ) { }
 
     ngOnInit() {
@@ -57,10 +62,23 @@ export class CatalogComponent implements OnInit {
     requestBook(bookId: number) {
         this.borrowService.requestBook(bookId).subscribe({
             next: () => {
-                alert('Request submitted successfully!');
+                this.modalService.show('Borrow request submitted successfully!', 'success');
+                this.notificationService.success('Your borrow request for book #' + bookId + ' has been submitted.');
                 this.loadBooks();
             },
-            error: (err) => alert('Error requesting book: ' + err.error)
+            error: (err) => {
+                const errorMessage = err.error?.message || err.error || err.message || 'Unknown error';
+
+                if (err.status === 400) {
+                    // Business rule error (e.g. limit reached), show message directly
+                    this.modalService.show(errorMessage, 'error');
+                    this.notificationService.error(errorMessage);
+                } else {
+                    // System error or other failure
+                    this.modalService.show('Request failed: ' + errorMessage, 'error');
+                    this.notificationService.error('Failed to request book: ' + errorMessage);
+                }
+            }
         });
     }
 }

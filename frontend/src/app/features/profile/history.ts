@@ -10,6 +10,8 @@ import { BorrowService } from '../../core/services/borrow.service';
 })
 export class HistoryComponent implements OnInit {
     history: any[] = [];
+    activeBorrowings: any[] = [];
+    pastHistory: any[] = [];
 
     constructor(private borrowService: BorrowService) { }
 
@@ -19,7 +21,11 @@ export class HistoryComponent implements OnInit {
 
     loadHistory() {
         this.borrowService.getMyHistory().subscribe({
-            next: (data) => this.history = data,
+            next: (data) => {
+                this.history = data;
+                this.activeBorrowings = data.filter((item: any) => item.status === 'APPROVED' || item.status === 'OVERDUE');
+                this.pastHistory = data.filter((item: any) => item.status !== 'APPROVED' && item.status !== 'OVERDUE');
+            },
             error: (err) => console.error('Failed to load history', err)
         });
     }

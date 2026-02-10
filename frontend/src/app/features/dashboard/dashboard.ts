@@ -60,6 +60,22 @@ export class DashboardComponent implements OnInit {
         this.showAddBookModal = true;
     }
 
+    exportReport() {
+        this.http.get('http://localhost:8080/api/reports/export', { responseType: 'blob' }).subscribe({
+            next: (blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `library_report_${new Date().getTime()}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            },
+            error: (err) => console.error('Export failed', err)
+        });
+    }
+
     get isAdmin() {
         return this.authService.isAdmin();
     }

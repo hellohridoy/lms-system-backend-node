@@ -12,10 +12,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
+
     @Autowired
     private JwtUtils jwtUtils;
 
@@ -39,7 +43,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            // Log error
+            logger.error("Cannot set user authentication: {}", e.getMessage());
+            logger.error("Full error: ", e);
         }
 
         filterChain.doFilter(request, response);

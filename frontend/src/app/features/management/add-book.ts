@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BookService, Book } from '../../core/services/book.service';
 import { DataUpdateService } from '../../core/services/data-update.service';
+import { ModalService } from '../../core/services/modal.service';
 
 @Component({
     selector: 'app-add-book',
@@ -30,7 +31,8 @@ export class AddBookComponent {
 
     constructor(
         private bookService: BookService,
-        private dataUpdateService: DataUpdateService
+        private dataUpdateService: DataUpdateService,
+        private modalService: ModalService
     ) { }
 
     onSubmit() {
@@ -39,6 +41,7 @@ export class AddBookComponent {
         }
         this.bookService.createBook(this.book as Book).subscribe({
             next: () => {
+                this.modalService.show('Book added successfully!', 'success');
                 this.dataUpdateService.notifyUpdate();
                 this.close.emit();
             },
