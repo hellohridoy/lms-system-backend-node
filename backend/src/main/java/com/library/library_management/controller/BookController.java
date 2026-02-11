@@ -43,7 +43,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('LIBRARIAN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
         return bookRepository.findById(id).map(book -> {
             book.setTitle(bookDetails.getTitle());

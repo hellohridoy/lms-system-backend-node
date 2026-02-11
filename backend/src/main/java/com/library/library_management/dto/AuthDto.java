@@ -32,9 +32,10 @@ public class AuthDto {
         private String fullName;
         private String phoneNumber;
         private String address;
+        private java.time.LocalDate registrationDate;
 
         public JwtResponse(String token, Long id, String username, String email, String role, String fullName,
-                String phoneNumber, String address) {
+                String phoneNumber, String address, java.time.LocalDate registrationDate) {
             this.token = token;
             this.id = id;
             this.username = username;
@@ -43,6 +44,7 @@ public class AuthDto {
             this.fullName = fullName;
             this.phoneNumber = phoneNumber;
             this.address = address;
+            this.registrationDate = registrationDate;
         }
     }
 

@@ -36,8 +36,7 @@ export class UsersComponent implements OnInit {
         });
     }
 
-    getRoleBadgeClass(roles: any[]): string {
-        const role = roles[0]?.name || 'ROLE_MEMBER';
+    getRoleBadgeClass(role: string): string {
         const baseClass = 'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ';
         switch (role) {
             case 'ROLE_ADMIN': return baseClass + 'bg-red-100 text-red-700';

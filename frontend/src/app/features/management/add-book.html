@@ -2,7 +2,7 @@
     <div
         class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in duration-300">
         <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-            <h2 class="text-2xl font-bold text-gray-900">Add New Book</h2>
+            <h2 class="text-2xl font-bold text-gray-900">{{ bookToEdit ? 'Edit Book' : 'Add New Book' }}</h2>
             <button (click)="close.emit()" class="text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -76,7 +76,7 @@
                     class="flex-1 px-6 py-3 border border-gray-200 rounded-xl font-bold text-gray-600 hover:bg-gray-50 transition-all">Cancel</button>
                 <button type="submit" [disabled]="!bookForm.form.valid"
                     class="flex-1 px-6 py-3 bg-app-primary text-white rounded-xl font-bold shadow-lg shadow-indigo-500/20 hover:bg-app-secondary disabled:opacity-50 transition-all active:scale-95">
-                    Add Book
+                    {{ bookToEdit ? 'Update Book' : 'Add Book' }}
                 </button>
             </div>
         </form>

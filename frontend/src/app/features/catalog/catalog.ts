@@ -7,11 +7,12 @@ import { AuthService } from '../../core/services/auth.service';
 import { DataUpdateService } from '../../core/services/data-update.service';
 import { ModalService } from '../../core/services/modal.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { AddBookComponent } from '../management/add-book';
 
 @Component({
     selector: 'app-catalog',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, AddBookComponent],
     templateUrl: './catalog.html'
 })
 export class CatalogComponent implements OnInit {
@@ -21,6 +22,9 @@ export class CatalogComponent implements OnInit {
     searchTerm: string = '';
     selectedYear: number | null = null;
     userRole: string = '';
+    showEditModal: boolean = false;
+    editingBook: Book | null = null;
+    showAddModal: boolean = false;
 
     constructor(
         private bookService: BookService,
@@ -80,5 +84,45 @@ export class CatalogComponent implements OnInit {
                 }
             }
         });
+    }
+
+    editBook(book: Book) {
+        this.editingBook = book;
+        this.showEditModal = true;
+    }
+
+    deleteBook(book: Book) {
+        if (!confirm(`Are you sure you want to delete "${book.title}"?`)) {
+            return;
+        }
+
+        this.bookService.deleteBook(book.id!).subscribe({
+            next: () => {
+                this.modalService.show('Book deleted successfully!', 'success');
+                this.notificationService.success('Book has been removed from the catalog.');
+                this.loadBooks();
+            },
+            error: (err) => {
+                this.modalService.show('Failed to delete book: ' + err.message, 'error');
+                this.notificationService.error('Error deleting book.');
+            }
+        });
+    }
+
+    closeEditModal() {
+        this.showEditModal = false;
+        this.editingBook = null;
+    }
+
+    isAdmin(): boolean {
+        return this.userRole === 'ROLE_ADMIN';
+    }
+
+    openAddBookModal() {
+        this.showAddModal = true;
+    }
+
+    closeAddModal() {
+        this.showAddModal = false;
     }
 }

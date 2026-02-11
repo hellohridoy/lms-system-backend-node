@@ -75,6 +75,22 @@
                                 </svg>
                             </button>
                         </div>
+                        <div *ngIf="request.status === 'APPROVED'"
+                            class="flex justify-end items-center gap-1 text-green-600 font-bold text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>Approved</span>
+                        </div>
+                        <div *ngIf="request.status === 'REJECTED'"
+                            class="flex justify-end items-center gap-1 text-red-600 font-bold text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            <span>Rejected</span>
+                        </div>
                     </td>
                 </tr>
             </tbody>

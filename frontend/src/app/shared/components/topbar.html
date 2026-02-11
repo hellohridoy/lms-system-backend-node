@@ -13,58 +13,119 @@
                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
                     </path>
                 </svg>
-                <span *ngIf="notifications.length > 0"
-                    class="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[10px] text-white flex items-center justify-center font-bold">
-                    {{ notifications.length }}
+                <span *ngIf="unreadCount > 0"
+                    class="absolute top-0 right-0 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-[10px] text-white flex items-center justify-center font-bold animate-pulse">
+                    {{ unreadCount }}
                 </span>
             </button>
 
             <!-- Notification Dropdown -->
             <div *ngIf="showNotifications"
-                class="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden animate-pop-in">
-                <div class="p-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-                    <h3 class="font-bold text-gray-900 text-sm">Notifications</h3>
-                    <button (click)="clearAll()" class="text-xs text-app-primary hover:underline font-semibold">Clear
-                        all</button>
+                class="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-pop-in origin-top-right z-50">
+
+                <!-- Header -->
+                <div class="p-4 border-b border-gray-50 flex items-center justify-between bg-white">
+                    <div class="flex items-center gap-2">
+                        <h3 class="font-bold text-gray-900 text-base">Notifications</h3>
+                        <span *ngIf="unreadCount > 0"
+                            class="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs font-bold rounded-full">{{ unreadCount
+                            }} New</span>
+                    </div>
+                    <button *ngIf="unreadCount > 0" (click)="markAllAsRead()"
+                        class="text-xs text-app-primary hover:text-blue-700 font-medium transition-colors">
+                        Mark all as read
+                    </button>
+                    <button *ngIf="unreadCount === 0" (click)="clearAll()"
+                        class="text-xs text-gray-400 hover:text-gray-600 font-medium transition-colors">
+                        Clear all
+                    </button>
                 </div>
-                <div class="max-h-96 overflow-y-auto">
-                    <div *ngFor="let n of notifications"
-                        class="p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div class="flex gap-3">
-                            <div [class]="'w-2 h-2 rounded-full mt-1.5 shrink-0 ' + 
-                                (n.type === 'success' ? 'bg-green-500' : 
-                                 n.type === 'error' ? 'bg-red-500' : 
-                                 n.type === 'warning' ? 'bg-orange-500' : 'bg-blue-500')">
+
+                <!-- List -->
+                <div class="max-h-[400px] overflow-y-auto">
+                    <div *ngFor="let n of notifications" (click)="markAsRead(n.id)" [class.bg-blue-50_30]="!n.read"
+                        class="group p-4 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer relative">
+
+                        <div class="flex gap-4">
+                            <!-- Icon -->
+                            <div
+                                [class]="getIconBg(n.type) + ' w-10 h-10 rounded-full flex items-center justify-center shrink-0'">
+                                <svg *ngIf="n.type === 'success'" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                <svg *ngIf="n.type === 'error'" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <svg *ngIf="n.type === 'warning'" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <svg *ngIf="n.type === 'info'" class="w-5 h-5" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
                             </div>
-                            <div>
-                                <p class="text-sm text-gray-800 leading-tight">{{ n.message }}</p>
-                                <p class="text-[10px] text-gray-400 mt-1 font-medium">{{ n.timestamp | date:'shortTime'
-                                    }}</p>
+
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0 pr-6">
+                                <p *ngIf="n.title" class="text-sm font-bold text-gray-900 mb-0.5 truncate">{{ n.title }}
+                                </p>
+                                <p class="text-sm text-gray-600 leading-snug line-clamp-2"
+                                    [class.text-gray-900]="!n.read" [class.font-medium]="!n.read">
+                                    {{ n.message }}
+                                </p>
+                                <p class="text-[11px] text-gray-400 mt-1.5 font-medium flex items-center gap-1">
+                                    <span>{{ n.timestamp | date:'shortTime' }}</span>
+                                    <span *ngIf="!n.read"
+                                        class="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block ml-1"></span>
+                                </p>
                             </div>
                         </div>
+
+                        <!-- Read Indicator/Action -->
+                        <div *ngIf="!n.read"
+                            class="absolute top-4 right-4 w-2 h-2 bg-blue-500 rounded-full group-hover:hidden"></div>
                     </div>
-                    <div *ngIf="notifications.length === 0" class="p-8 text-center bg-white">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+
+                    <!-- Empty State -->
+                    <div *ngIf="notifications.length === 0"
+                        class="py-12 px-8 text-center bg-white flex flex-col items-center justify-center h-64">
+                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9">
                                 </path>
                             </svg>
                         </div>
-                        <p class="text-sm text-gray-500 font-medium tracking-tight">All caught up!</p>
-                        <p class="text-xs text-gray-400 mt-1">No new notifications</p>
+                        <p class="text-gray-900 font-bold text-base">No notifications</p>
+                        <p class="text-sm text-gray-500 mt-1">We'll notify you when something arrives.</p>
                     </div>
+                </div>
+
+                <!-- Footer -->
+                <div *ngIf="notifications.length > 0" class="p-3 bg-gray-50 border-t border-gray-100 text-center">
+                    <button
+                        class="text-xs font-bold text-gray-600 hover:text-app-primary transition-colors uppercase tracking-wide">
+                        View all activity
+                    </button>
                 </div>
             </div>
         </div>
 
         <div class="flex items-center gap-3 border-l pl-6 border-gray-100">
-            <div class="text-right">
+            <div class="text-right hidden md:block">
                 <p class="text-sm font-bold text-gray-900">{{ userName }}</p>
                 <p class="text-xs font-medium text-gray-500">{{ userRoleDisplay }}</p>
+                <p class="text-[10px] text-app-primary font-bold mt-0.5" *ngIf="membershipText">{{ membershipText }}</p>
             </div>
             <div
-                class="w-10 h-10 bg-app-light rounded-full flex items-center justify-center border border-gray-200 text-app-primary font-bold">
+                class="w-10 h-10 bg-app-light rounded-full flex items-center justify-center border border-gray-200 text-app-primary font-bold shadow-sm">
                 {{ userName.charAt(0) }}
             </div>
         </div>

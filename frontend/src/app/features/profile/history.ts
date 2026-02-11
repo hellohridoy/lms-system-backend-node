@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BorrowService } from '../../core/services/borrow.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-history',
@@ -13,10 +14,27 @@ export class HistoryComponent implements OnInit {
     activeBorrowings: any[] = [];
     pastHistory: any[] = [];
 
-    constructor(private borrowService: BorrowService) { }
+    user: any;
+    daysSinceRegistration: number = 0;
+
+    constructor(
+        private borrowService: BorrowService,
+        private authService: AuthService
+    ) { }
 
     ngOnInit() {
+        this.user = this.authService.getUser();
+        if (this.user?.registrationDate) {
+            this.calculateDaysSinceRegistration();
+        }
         this.loadHistory();
+    }
+
+    calculateDaysSinceRegistration() {
+        const regDate = new Date(this.user.registrationDate);
+        const now = new Date();
+        const diff = now.getTime() - regDate.getTime();
+        this.daysSinceRegistration = Math.floor(diff / (1000 * 60 * 60 * 24));
     }
 
     loadHistory() {

@@ -64,7 +64,8 @@ public class AuthController {
                 user.getRole().name(),
                 user.getFullName(),
                 user.getPhoneNumber(),
-                user.getAddress()));
+                user.getAddress(),
+                user.getRegistrationDate()));
     }
 
     @PostMapping("/signup")
@@ -85,6 +86,7 @@ public class AuthController {
                 .phoneNumber(signUpRequest.getPhoneNumber())
                 .address(signUpRequest.getAddress())
                 .status(User.UserStatus.ACTIVE)
+                .registrationDate(java.time.LocalDate.now())
                 .build();
 
         String strRole = signUpRequest.getRole();

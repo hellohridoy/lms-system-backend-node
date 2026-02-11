@@ -107,7 +107,9 @@ public class BorrowRequestController {
         }
 
         borrowRequestRepository.save(request);
-        return ResponseEntity.ok("Request submitted successfully. Status: " + initialStatus);
+        java.util.Map<String, String> response = new java.util.HashMap<>();
+        response.put("message", "Request submitted successfully. Status: " + initialStatus);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/renew/{id}")
@@ -123,7 +125,8 @@ public class BorrowRequestController {
         borrowRequest.setRenewal(true);
         borrowRequestRepository.save(borrowRequest);
 
-        return ResponseEntity.ok("Renewal request submitted successfully");
+        return ResponseEntity
+                .ok(java.util.Collections.singletonMap("message", "Renewal request submitted successfully"));
     }
 
     @PutMapping("/{id}/review")
@@ -139,7 +142,7 @@ public class BorrowRequestController {
         }
 
         borrowRequestRepository.save(request);
-        return ResponseEntity.ok("Reviewed by librarian");
+        return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Reviewed by librarian"));
     }
 
     @PutMapping("/{id}/approve")
@@ -161,7 +164,7 @@ public class BorrowRequestController {
         }
 
         borrowRequestRepository.save(request);
-        return ResponseEntity.ok("Final decision by admin");
+        return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Final decision by admin"));
     }
 
     @GetMapping("/my-history")
@@ -231,7 +234,7 @@ public class BorrowRequestController {
         request.setFinePaid(true);
         request.setFineAmount(0.0);
         borrowRequestRepository.save(request);
-        return ResponseEntity.ok("Fine paid successfully");
+        return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Fine paid successfully"));
     }
 
     @PutMapping("/users/{userId}/status")
@@ -241,7 +244,7 @@ public class BorrowRequestController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setEnabled(enabled);
         userRepository.save(user);
-        return ResponseEntity.ok("User status updated");
+        return ResponseEntity.ok(java.util.Collections.singletonMap("message", "User status updated"));
     }
 
     @GetMapping("/users")

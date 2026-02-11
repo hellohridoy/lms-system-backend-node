@@ -45,10 +45,29 @@ export class RequestManagementComponent implements OnInit {
 
         obs.subscribe({
             next: () => {
-                const msg = approve ? 'Request approved successfully!' : 'Request rejected successfully!';
+                let msg = '';
+                if (approve) {
+                    if (this.userRole === 'ROLE_LIBRARIAN') {
+                        msg = 'Approved by librarian, pending for admin';
+                    } else {
+                        msg = 'Request approved successfully!';
+                    }
+                } else {
+                    msg = 'Request rejected successfully!';
+                }
+
                 this.modalService.show(msg, approve ? 'success' : 'info');
-                this.loadRequests();
-                this.selectedIds.delete(id);
+
+                if (this.userRole === 'ROLE_LIBRARIAN') {
+                    // Remove from list for Librarian (moves to Admin queue)
+                    this.requests = this.requests.filter(r => r.id !== id);
+                    this.selectedIds.delete(id);
+                } else {
+                    // Update status in place for Admin (to show "Approved" in UI)
+                    const newStatus = approve ? 'APPROVED' : 'REJECTED';
+                    this.requests = this.requests.map(r => r.id === id ? { ...r, status: newStatus } : r);
+                    this.selectedIds.delete(id);
+                }
             },
             error: (err) => console.error('Review failed', err)
         });

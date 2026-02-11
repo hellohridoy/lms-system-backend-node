@@ -39,4 +39,12 @@ export class BookService {
     getGenres(): Observable<string[]> {
         return this.http.get<string[]>(`${this.apiUrl}/genres`);
     }
+
+    updateBook(id: number, book: Book): Observable<Book> {
+        return this.http.put<Book>(`${this.apiUrl}/${id}`, book);
+    }
+
+    deleteBook(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    }
 }
