@@ -3,8 +3,10 @@ package com.library.library_management.controller;
 import com.library.library_management.model.Book;
 import com.library.library_management.model.BorrowRequest;
 import com.library.library_management.model.User;
+import com.library.library_management.model.UserNotification;
 import com.library.library_management.repository.BookRepository;
 import com.library.library_management.repository.BorrowRequestRepository;
+import com.library.library_management.repository.UserNotificationRepository;
 import com.library.library_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,9 @@ public class BorrowRequestController {
 
     @Autowired
     com.library.library_management.repository.SystemConfigRepository systemConfigRepository;
+
+    @Autowired
+    UserNotificationRepository userNotificationRepository;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('LIBRARIAN')")
@@ -145,6 +150,17 @@ public class BorrowRequestController {
         }
 
         borrowRequestRepository.save(request);
+
+        String bookTitle = request.getBook().getTitle();
+        String msg = approve
+                ? "Your request for \"" + bookTitle + "\" was approved by the librarian and is pending admin approval."
+                : "Your request for \"" + bookTitle + "\" was rejected by the librarian.";
+        userNotificationRepository.save(UserNotification.builder()
+                .user(request.getUser())
+                .message(msg)
+                .read(false)
+                .build());
+
         return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Reviewed by librarian"));
     }
 
@@ -167,6 +183,17 @@ public class BorrowRequestController {
         }
 
         borrowRequestRepository.save(request);
+
+        String bookTitle = request.getBook().getTitle();
+        String msg = approve
+                ? "Your request for \"" + bookTitle + "\" has been approved! You can collect your book."
+                : "Your request for \"" + bookTitle + "\" was rejected.";
+        userNotificationRepository.save(UserNotification.builder()
+                .user(request.getUser())
+                .message(msg)
+                .read(false)
+                .build());
+
         return ResponseEntity.ok(java.util.Collections.singletonMap("message", "Final decision by admin"));
     }
 

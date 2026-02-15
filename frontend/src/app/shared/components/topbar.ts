@@ -1,7 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
-import { NotificationService, Notification } from '../../core/services/notification.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { NotificationApiService, ServerNotification } from '../../core/services/notification-api.service';
+
+export interface NotificationDisplay {
+    id: number;
+    message: string;
+    title?: string;
+    read: boolean;
+    timestamp: Date;
+    type: 'success' | 'error' | 'info' | 'warning';
+}
 
 @Component({
     selector: 'app-topbar',
@@ -9,16 +19,19 @@ import { NotificationService, Notification } from '../../core/services/notificat
     imports: [CommonModule],
     templateUrl: './topbar.html'
 })
-export class TopbarComponent implements OnInit {
+export class TopbarComponent implements OnInit, OnDestroy {
     userName: string = 'User';
     userRoleDisplay: string = 'Member';
     membershipText: string = '';
     showNotifications = false;
-    notifications: Notification[] = [];
+    notifications: NotificationDisplay[] = [];
+    private pollInterval?: ReturnType<typeof setInterval>;
+    private toastShownIds = new Set<number>();
 
     constructor(
         private authService: AuthService,
-        private notificationService: NotificationService
+        private notificationService: NotificationService,
+        private notificationApiService: NotificationApiService
     ) { }
 
     ngOnInit() {
@@ -35,8 +48,33 @@ export class TopbarComponent implements OnInit {
             }
         });
 
-        this.notificationService.notificationList$.subscribe(list => {
-            this.notifications = list;
+        this.loadServerNotifications();
+        this.pollInterval = setInterval(() => this.loadServerNotifications(), 30000);
+    }
+
+    ngOnDestroy() {
+        if (this.pollInterval) clearInterval(this.pollInterval);
+    }
+
+    loadServerNotifications() {
+        this.notificationApiService.getNotifications().subscribe({
+            next: (list: ServerNotification[]) => {
+                this.notifications = list.map(n => ({
+                    id: n.id,
+                    message: n.message,
+                    title: 'Borrow request',
+                    read: n.read,
+                    timestamp: new Date(n.createdAt),
+                    type: 'info' as const
+                }));
+                list.filter(n => !n.read).forEach(n => {
+                    if (!this.toastShownIds.has(n.id)) {
+                        this.toastShownIds.add(n.id);
+                        this.notificationService.info(n.message, 'Borrow request update');
+                    }
+                });
+            },
+            error: () => { /* ignore */ }
         });
     }
 
@@ -46,19 +84,33 @@ export class TopbarComponent implements OnInit {
 
     toggleNotifications() {
         this.showNotifications = !this.showNotifications;
+        if (this.showNotifications) this.loadServerNotifications();
     }
 
     markAsRead(id: number) {
-        this.notificationService.markAsRead(id);
+        this.notificationApiService.markAsRead(id).subscribe({
+            next: () => {
+                this.notifications = this.notifications.map(n => n.id === id ? { ...n, read: true } : n);
+            }
+        });
     }
 
     markAllAsRead() {
-        this.notificationService.markAllAsRead();
-        this.showNotifications = false;
+        this.notificationApiService.markAllAsRead().subscribe({
+            next: () => {
+                this.notifications = this.notifications.map(n => ({ ...n, read: true }));
+                this.showNotifications = false;
+            }
+        });
     }
 
     clearAll() {
-        this.notificationService.clearAll();
+        this.notificationApiService.markAllAsRead().subscribe({
+            next: () => {
+                this.notifications = this.notifications.map(n => ({ ...n, read: true }));
+                this.showNotifications = false;
+            }
+        });
     }
 
     getIconBg(type: string): string {
