@@ -15,12 +15,13 @@ export interface Book {
     publicationYear?: number;
     tags?: string[];
 }
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class BookService {
-    private apiUrl = 'http://localhost:8080/api/books';
+    private apiUrl = `${environment.apiUrl}/books`;
 
     constructor(private http: HttpClient) { }
 

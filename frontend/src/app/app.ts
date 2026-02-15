@@ -8,5 +8,10 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('library-ui');
+  protected readonly title = signal('Library Management System\n' +
+      '\n');
+
+  constructor() {
+    console.log('App Component Constructed');
+  }
 }

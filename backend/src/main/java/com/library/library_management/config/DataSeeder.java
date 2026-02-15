@@ -23,6 +23,8 @@ public class DataSeeder implements CommandLineRunner {
         @Autowired
         PasswordEncoder encoder;
 
+
+
         @Autowired
         com.library.library_management.repository.SystemConfigRepository systemConfigRepository;
 
@@ -30,6 +32,7 @@ public class DataSeeder implements CommandLineRunner {
         public void run(String... args) throws Exception {
                 if (userRepository.count() == 0) {
                         seedUsers();
+                        System.out.println("Hridoy");
                 }
                 if (bookRepository.count() == 0) {
                         seedBooks();
