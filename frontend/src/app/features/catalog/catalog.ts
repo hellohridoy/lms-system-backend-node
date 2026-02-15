@@ -52,9 +52,17 @@ export class CatalogComponent implements OnInit {
 
     loadBooks() {
         const genre = this.selectedGenre || undefined;
-        this.bookService.getBooks(this.searchTerm || undefined, genre, this.selectedYear || undefined).subscribe(books => {
-            this.allBooks = books;
-            this.books = books;
+        this.bookService.getBooks(this.searchTerm || undefined, genre, this.selectedYear || undefined).subscribe({
+            next: (books) => {
+                this.allBooks = books ?? [];
+                this.books = this.allBooks;
+            },
+            error: (err) => {
+                console.error('Failed to load books', err);
+                this.books = [];
+                this.allBooks = [];
+                this.notificationService.error('Failed to load catalog. Please try again.');
+            }
         });
     }
 
@@ -64,6 +72,9 @@ export class CatalogComponent implements OnInit {
     }
 
     requestBook(bookId: number) {
+        if (bookId == null || typeof bookId !== 'number') {
+            return;
+        }
         this.borrowService.requestBook(bookId).subscribe({
             next: () => {
                 this.modalService.show('Borrow request submitted successfully!', 'success');
@@ -92,11 +103,14 @@ export class CatalogComponent implements OnInit {
     }
 
     deleteBook(book: Book) {
-        if (!confirm(`Are you sure you want to delete "${book.title}"?`)) {
+        if (book.id == null) {
+            return;
+        }
+        if (!confirm(`Are you sure you want to delete "${book.title ?? 'this book'}"?`)) {
             return;
         }
 
-        this.bookService.deleteBook(book.id!).subscribe({
+        this.bookService.deleteBook(book.id).subscribe({
             next: () => {
                 this.modalService.show('Book deleted successfully!', 'success');
                 this.notificationService.success('Book has been removed from the catalog.');

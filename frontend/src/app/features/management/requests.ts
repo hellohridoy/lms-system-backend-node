@@ -73,7 +73,14 @@ export class RequestManagementComponent implements OnInit {
         });
     }
 
+    /** Requests that can be reviewed (pending librarian or pending admin depending on role) */
+    getReviewableRequests(): any[] {
+        return this.requests.filter(r => this.canReview(r.status));
+    }
+
     toggleSelection(id: number) {
+        const req = this.requests.find(r => r.id === id);
+        if (req && !this.canReview(req.status)) return; // don't select already approved/rejected
         if (this.selectedIds.has(id)) {
             this.selectedIds.delete(id);
         } else {
@@ -82,9 +89,13 @@ export class RequestManagementComponent implements OnInit {
     }
 
     onBulkReview(approve: boolean) {
-        if (this.selectedIds.size === 0) return;
+        // Only process selected requests that are still reviewable (not already approved/rejected)
+        const ids = Array.from(this.selectedIds).filter(id => {
+            const req = this.requests.find(r => r.id === id);
+            return req && this.canReview(req.status);
+        });
+        if (ids.length === 0) return;
 
-        const ids = Array.from(this.selectedIds);
         const requests = ids.map(id => {
             if (this.userRole === 'ROLE_LIBRARIAN') {
                 return this.borrowService.reviewRequest(id, approve);
@@ -105,14 +116,16 @@ export class RequestManagementComponent implements OnInit {
     }
 
     isAllSelected(): boolean {
-        return this.requests.length > 0 && this.requests.every(r => this.selectedIds.has(r.id));
+        const reviewable = this.getReviewableRequests();
+        return reviewable.length > 0 && reviewable.every(r => this.selectedIds.has(r.id));
     }
 
     toggleAll() {
+        const reviewable = this.getReviewableRequests();
         if (this.isAllSelected()) {
             this.selectedIds.clear();
         } else {
-            this.requests.forEach(r => this.selectedIds.add(r.id));
+            reviewable.forEach(r => this.selectedIds.add(r.id));
         }
     }
 

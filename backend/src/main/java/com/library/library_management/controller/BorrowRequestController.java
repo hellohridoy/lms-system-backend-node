@@ -58,6 +58,9 @@ public class BorrowRequestController {
         if (user.getRole() == User.Role.ROLE_GUEST) {
             return ResponseEntity.status(403).body("Guests cannot request books");
         }
+        if (user.getRole() == User.Role.ROLE_ADMIN) {
+            return ResponseEntity.status(403).body("Admins cannot borrow books. Only members and librarians can borrow.");
+        }
 
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));

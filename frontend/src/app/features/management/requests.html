@@ -21,7 +21,7 @@
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr>
                     <th class="px-8 py-5 w-10">
-                        <input type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()"
+                        <input *ngIf="getReviewableRequests().length > 0" type="checkbox" [checked]="isAllSelected()" (change)="toggleAll()"
                             class="rounded border-gray-300 text-app-primary focus:ring-app-primary">
                     </th>
                     <th class="px-8 py-5 text-xs font-bold text-gray-400 uppercase tracking-widest">Member</th>
@@ -36,9 +36,10 @@
                 <tr *ngFor="let request of requests" class="hover:bg-gray-50/50 transition-colors"
                     [class.bg-app-light/30]="selectedIds.has(request.id)">
                     <td class="px-8 py-6">
-                        <input type="checkbox" [checked]="selectedIds.has(request.id)"
+                        <input *ngIf="canReview(request.status)" type="checkbox" [checked]="selectedIds.has(request.id)"
                             (change)="toggleSelection(request.id)"
                             class="rounded border-gray-300 text-app-primary focus:ring-app-primary">
+                        <span *ngIf="!canReview(request.status)" class="text-gray-300">—</span>
                     </td>
                     <td class="px-8 py-6">
                         <div class="flex items-center gap-3">

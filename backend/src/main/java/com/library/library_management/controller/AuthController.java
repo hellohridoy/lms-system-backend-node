@@ -200,6 +200,7 @@ public class AuthController {
                 user.getRole().name(),
                 user.getFullName(),
                 user.getPhoneNumber(),
-                user.getAddress()));
+                user.getAddress(),
+                user.getRegistrationDate()));
     }
 }

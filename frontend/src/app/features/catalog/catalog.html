@@ -36,14 +36,14 @@
                     class="w-full h-full object-cover">
                 <div
                     class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-app-primary">
-                    {{ book.genre }}
+                    {{ book.genre ?? 'Book' }}
                 </div>
             </div>
             <div class="p-6 space-y-4">
                 <div class="flex items-start justify-between">
                     <div class="flex-1">
-                        <h3 class="text-xl font-bold text-gray-900 line-clamp-1">{{ book.title }}</h3>
-                        <p class="text-sm text-gray-500 font-medium">{{ book.author }}</p>
+                        <h3 class="text-xl font-bold text-gray-900 line-clamp-1">{{ book.title ?? 'Untitled' }}</h3>
+                        <p class="text-sm text-gray-500 font-medium">{{ book.author ?? 'Unknown' }}</p>
                     </div>
                     <div *ngIf="isAdmin()" class="flex gap-2 ml-2">
                         <button (click)="editBook(book)"
@@ -64,14 +64,14 @@
                         </button>
                     </div>
                 </div>
-                <p class="text-gray-600 text-sm line-clamp-2">{{ book.synopsis }}</p>
+                <p class="text-gray-600 text-sm line-clamp-2">{{ book.synopsis ?? '' }}</p>
                 <div class="flex items-center justify-between pt-2">
                     <div class="text-xs font-bold uppercase tracking-wider">
-                        <span [class]="book.availableCopies > 0 ? 'text-green-600' : 'text-red-600'">
-                            {{ book.availableCopies > 0 ? book.availableCopies + ' Copies Available' : 'Out of Stock' }}
+                        <span [class]="(book.availableCopies ?? 0) > 0 ? 'text-green-600' : 'text-red-600'">
+                            {{ (book.availableCopies ?? 0) > 0 ? (book.availableCopies ?? 0) + ' Copies Available' : 'Out of Stock' }}
                         </span>
                     </div>
-                    <button (click)="requestBook(book.id!)" [disabled]="book.availableCopies === 0"
+                    <button *ngIf="!isAdmin() && book.id != null" (click)="requestBook(book.id)" [disabled]="(book.availableCopies ?? 0) === 0"
                         class="px-5 py-2.5 bg-app-primary text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-500/20 hover:bg-app-secondary disabled:opacity-50 disabled:shadow-none transition-all active:scale-[0.98]">
                         Borrow Now
                     </button>
