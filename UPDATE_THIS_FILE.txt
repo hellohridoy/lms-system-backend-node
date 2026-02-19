@@ -1,0 +1,52 @@
+═══════════════════════════════════════════════════════════════
+  🚨 IMPORTANT: UPDATE THIS FILE BEFORE DEPLOYING 🚨
+═══════════════════════════════════════════════════════════════
+
+FILE TO UPDATE:
+  frontend/src/environments/environment.prod.ts
+
+WHAT TO CHANGE:
+  Find your Render backend URL from:
+  https://dashboard.render.com/web/srv-d6b9rkoboq4c73fgrcgg
+
+  Then update the apiUrl in environment.prod.ts:
+
+  CURRENT:
+    apiUrl: 'https://library-management-system-backend.onrender.com/api'
+
+  CHANGE TO:
+    apiUrl: 'https://YOUR-ACTUAL-RENDER-URL.onrender.com/api'
+
+EXAMPLE:
+  If your Render URL is: https://library-mgmt-abc123.onrender.com
+  Then set: apiUrl: 'https://library-mgmt-abc123.onrender.com/api'
+
+═══════════════════════════════════════════════════════════════
+
+AFTER UPDATING:
+
+1. Save the file
+2. Run: git add .
+3. Run: git commit -m "Fix CORS and update API URL"
+4. Run: git push origin main
+5. Wait 2-5 minutes for deployments
+6. Test your site!
+
+═══════════════════════════════════════════════════════════════
+
+VERIFY IT WORKS:
+
+Test backend:
+  curl https://YOUR-ACTUAL-RENDER-URL.onrender.com/health
+
+Should return:
+  {"status":"ok","timestamp":"...","service":"Library Management System API"}
+
+Test frontend:
+  1. Open: https://librarymanagementsystem-eight.vercel.app
+  2. Press F12 (DevTools)
+  3. Try to login/register
+  4. Check Console - should see NO CORS errors
+  5. Check Network - API calls should return 200 OK
+
+═══════════════════════════════════════════════════════════════

@@ -1,4 +1,6 @@
 export const environment = {
     production: true,
-    apiUrl: '/api' // Use relative path for combined deployment or change to specific URL later
+    // TODO: Replace with your actual Render backend URL from dashboard
+    // Example: https://your-service-name.onrender.com/api
+    apiUrl: 'https://srv-d6b9rkoboq4c73fgrcgg.onrender.com/api'
 };

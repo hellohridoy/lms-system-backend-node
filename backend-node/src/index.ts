@@ -14,8 +14,40 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// Configure CORS to allow requests from your frontend
+const allowedOrigins = [
+    'http://localhost:4200',
+    'https://librarymanagementsystem-eight.vercel.app',
+    'https://library-management-system-frontend.vercel.app',
+    // Add any other Vercel preview URLs if needed
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'ok', 
+        timestamp: new Date().toISOString(),
+        service: 'Library Management System API'
+    });
+});
 
 // Routes
 app.use("/api/auth", authRoutes);
