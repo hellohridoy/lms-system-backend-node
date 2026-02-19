@@ -1,0 +1,51 @@
+═══════════════════════════════════════════════════════════════
+                    ⚠️  FIX THIS NOW ⚠️
+═══════════════════════════════════════════════════════════════
+
+YOUR DEPLOYMENT IS FAILING BECAUSE:
+Root Directory is not set to "backend-node"
+
+═══════════════════════════════════════════════════════════════
+
+🎯 DO THIS (30 SECONDS):
+
+1. Go to: https://dashboard.render.com/web/srv-d6b9rkoboq4c73fgrcgg/settings
+
+2. Scroll to "Build & Deploy" section
+
+3. Find "Root Directory" field
+
+4. Type: backend-node
+
+5. Find "Build Command" field
+
+6. Type: npm install && npm run build
+
+7. Find "Start Command" field
+
+8. Type: npm start
+
+9. Click "Save Changes" button
+
+10. Wait 3-5 minutes for deployment
+
+═══════════════════════════════════════════════════════════════
+
+THAT'S IT! Just set Root Directory to "backend-node"
+
+═══════════════════════════════════════════════════════════════
+
+After saving, Render will:
+✓ Look in the correct folder (backend-node)
+✓ Find package.json
+✓ Build successfully
+✓ Start your server
+
+═══════════════════════════════════════════════════════════════
+
+TEST WHEN DONE:
+curl https://lms-system-backend-node-1.onrender.com/health
+
+Should return: {"status":"ok",...}
+
+═══════════════════════════════════════════════════════════════
