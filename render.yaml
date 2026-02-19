@@ -4,8 +4,9 @@ services:
     env: node
     region: oregon
     plan: free
-    buildCommand: cd backend-node && npm install && npm run build
-    startCommand: cd backend-node && node dist/index.js
+    rootDir: backend-node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 22.22.0
