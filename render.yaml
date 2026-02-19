@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lms-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend-node && npm install && npm run build
+    startCommand: cd backend-node && node dist/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
