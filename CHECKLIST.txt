@@ -1,0 +1,74 @@
+═══════════════════════════════════════════════════════════════
+                    RENDER DEPLOYMENT CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+□ STEP 1: UPDATE RENDER SETTINGS
+  
+  Go to: https://dashboard.render.com/web/srv-d6b9rkoboq4c73fgrcgg
+  
+  Click "Settings" → Find "Build & Deploy" section
+  
+  □ Root Directory = backend-node
+  □ Build Command = npm install && npm run build
+  □ Start Command = npm start
+  □ Click "Save Changes"
+
+═══════════════════════════════════════════════════════════════
+
+□ STEP 2: VERIFY ENVIRONMENT VARIABLES
+  
+  Click "Environment" tab
+  
+  Check these variables exist:
+  □ DB_HOST
+  □ DB_PORT
+  □ DB_USERNAME
+  □ DB_PASSWORD
+  □ DB_NAME
+  □ JWT_SECRET ← CRITICAL!
+  □ PORT
+  
+  If JWT_SECRET missing:
+  □ Run: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+  □ Copy output
+  □ Add as JWT_SECRET in Render
+
+═══════════════════════════════════════════════════════════════
+
+□ STEP 3: DEPLOY
+  
+  □ Wait for auto-deploy (or click "Manual Deploy")
+  □ Click "Logs" to monitor
+  □ Wait 3-5 minutes
+
+═══════════════════════════════════════════════════════════════
+
+□ STEP 4: TEST
+  
+  □ Run: curl https://lms-system-backend-node-1.onrender.com/health
+  □ Should return: {"status":"ok",...}
+  
+  □ Open: https://librarymanagementsystem-eight.vercel.app
+  □ Press F12
+  □ Try login/register
+  □ Check for CORS errors (should be none!)
+
+═══════════════════════════════════════════════════════════════
+
+SUCCESS INDICATORS:
+  ✓ Render shows "Live" status
+  ✓ Logs show "Server is running on port 8080"
+  ✓ Health endpoint returns JSON
+  ✓ Frontend connects without errors
+  ✓ No CORS errors in browser console
+
+═══════════════════════════════════════════════════════════════
+
+COMMON ISSUES:
+  ✗ Build fails → Check build command
+  ✗ Deploy fails → Check start command
+  ✗ Service crashes → Check JWT_SECRET is set
+  ✗ Database error → Check DB credentials
+  ✗ CORS error → Wait for deployment to complete
+
+═══════════════════════════════════════════════════════════════
